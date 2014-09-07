@@ -1,0 +1,28 @@
+/**
+ * Using text from http://www.gutenberg.org/ebooks/1129?msg=welcome_stranger
+ * 
+ * Get ranked word count from text file.  Demonstrate use of implict ordering and overriding it with Spark RDD
+ * /
+ 
+ /* Change the path to where you put the text. */
+val lines = sc.textFile("../data/books/MacBeth.txt")
+
+/* Get the words but drop the empty ones */
+val words = lines.flatMap(l => l.split(' ')).filter(w => w.length > 0)
+
+/* Count the words */
+val wordcounts = words.map(w => (w, 1)).reduceByKey((a, b) => a + b)
+
+/* Ny Scala is not strong yet so I came up with this reading the docs and Stack Overflow.
+  See this: http://daily-scala.blogspot.com/2010/04/implicit-parameters.html
+
+  Since I am, ironically, using a Map Reduce in Spark for the words I have Tuples that
+  have a String key at ._1 and the count at ._2 but I want to not create another RDD that
+  is the mapping of the final counts in reverse.  The solution I chose was to allow take to use ordering.
+*/
+implicit val ord = new Ordering[Tuple2[String, Int]]() { 
+  override def compare(x: Tuple2[String, Int], y: Tuple2[String, Int]) = { -x._2.compare(y._2) } }
+
+/* Using the reverse ordering on the counter get the top 10 words by count */ 
+ wordcounts.takeOrdered(10)(ord)
+ 
