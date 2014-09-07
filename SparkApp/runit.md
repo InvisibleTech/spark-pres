@@ -18,12 +18,11 @@ mvn clean compile assembly:single
     target/SparkApp-0.0.1-SNAPSHOT.jar 
 
 ## Build the naked jar
-cd /Users/johnferguson/Documents/Code/java/FileSparkLocal/SparkApp
+cd /Users/johnferguson/Documents/Code/spark-pres/SparkApp
 mvn clean package
 
 ## Start the master and workers
-/Users/johnferguson/Documents/Code/SparkSummit/spark
-sbin/start-master.sh
+/Users/johnferguson/Documents/Code/spark-pres/spark-1.0.2-bin-hadoop2/sbin/start-master.sh
 
 In case of emergencey, break glass:
 
@@ -32,7 +31,7 @@ sbin/stop-all.sh
 Get the workers going... in different shells.
 ./bin/spark-class org.apache.spark.deploy.worker.Worker spark://new-host.home:7077
 
-./bin/spark-class org.apache.spark.deploy.worker.Worker sspark://new-host.home:7077 --webui-port 8082
+./bin/spark-class org.apache.spark.deploy.worker.Worker spark://new-host.home:7077 --webui-port 8082
 
 http://localhost:8080/
 
