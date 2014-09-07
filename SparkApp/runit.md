@@ -12,7 +12,7 @@ mvn clean compile assembly:single
 
 
 # The command for a "remote" master with workernodes
-    ../../../SparkSummit/spark/bin/spark-submit \
+    ../spark-1.0.2-bin-hadoop2/bin/spark-submit \
     --class "org.fergjo.SparkApp.App" \
     --master spark://new-host.home:7077 \
     target/SparkApp-0.0.1-SNAPSHOT.jar 
