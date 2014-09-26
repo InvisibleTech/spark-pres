@@ -21,5 +21,80 @@
 
 #Transformations
 ##Element-wise
+* Lazy evaluation - only when used in an action
+* Many transformations are element-wise, but not all.
+* As you derive new RDDs from prior ones using transformations - a graph called a lineage is kept.
+* Lineage is used to recompute the RDD if one is lost or part of a persistent RDD is lost.
+
+#Actions
+* Produce the output returned to the driver.
+* Cause the transformations defining the RDDs to be invoked.
+* take vs. collect
+    - take is used to take a portion of the data
+    - collect can bring back all and therefor too much data.
+
+#Serialization
+* Since the driver passes Transformations, Actions amd Data to the workers, the functions and data need to be serialized.
+* Scala - need to support Serializable interface). Furthermore, any objects referenced in the code will be serialized too.  Be careful of amount of data.
+
+#Special RDDs
+Additional operations are available on RDDs containing certain type of data—for example, statistical functions on RDDs of numbers, and key-value operations such as aggregating data by key on RDDs of key-value pairs.
+
+Example 3-24. Scala squaring the values in an RDD 
+val input = sc . parallelize ( List ( 1 , 2 , 3 , 4 )) 
+val result = input . map ( x => x * x ) println ( result . collect ())
+
+Example 3-27. Scala flatMap example, splitting lines into multiple words 
+val lines = sc . parallelize ( List ( "hello world" , "hi" )) 
+val words = lines . flatMap ( line =>
+line . split ( " " )) 
+words . first () // returns "hello"
+
+#Set Operations on RDDs - Transformations
+* Union - is almost mathematical - duplicates are not removed - to improve performance
+* Distinct - can remove duplicates but is an expensive process
+* Intersection - requires a data shuffle.
+* Cartesian Product
+
+#Persistence (Caching)
+* Each action against an RDD would normally recompute the lineage - no reuse.  However, by persisting an RDD we eliminate this cost.  Benefits iterations.
+* Of course the Resilience would allow the RDD to be recomputed if the persisting node goes down.
+* There are various in-memory persistence options and some that spill to disk.
+    - Java heap -unserialized
+    - Off heap - serialized
+    - Disk - serialized
+* For memory only modes, old partitions are evicted using an LRU policy.  They are recomputed as needed.
+* Bottom line is - Spark will make sure your job doesn't break due to too much memory use.  It may be less performant but it will complete - all things being equal.
+
+#Examples
+Example 3-3. Scala parallelize example 
+val lines = sc . parallelize ( List ( "pandas" , "i like pandas" ))
+
+Scala filter example 
+val macbethRDD = sc.textFile( "../data/books/MacBeth.txt" )
+val bloodyScottsRDD = macbethRDD.filter (line => line.contains( "blood" ))
+
+val warAndPeaceRDD = sc.textFile("../data/books/WarAndPeace.txt")
+val bloodyRussiansRDD = warAndPeaceRDD.filter (line => line.contains("blood"))
+
+macbethRDD.count()
+bloodyScottsRDD.count()
+
+warAndPeaceRDD.count()
+bloodyRussiansRDD.count()
+
+val overallGore = bloodyScottsRDD.union(bloodyRussiansRDD)
+
+Example 3-24. Scala squaring the values in an RDD 
+val input = sc.parallelize ( List ( 1 , 2 , 3 , 4 )) 
+val result = input.map ( x => x * x ) println ( result . collect ())
+
+Example 3-27. Scala flatMap example, splitting lines into multiple words 
+val lines = sc.parallelize(List( "hello world" , "hi" )) 
+val words = lines.flatMap(line => line.split( " " )) 
+words.first() // returns "hello"
+
+#Notes on persistence
+While the methods for loading an RDD are largely found in the SparkContext class, the methods for saving an RDD are defined on the RDD classes. In Scala, implicit conversion exists so that an RDD that can be saved as a sequence file is converted to the appropriate type, and in Java explicit conversion must be used.
 
 
