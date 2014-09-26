@@ -29,12 +29,14 @@ In case of emergencey, break glass:
 sbin/stop-all.sh 
 
 Get the workers going... in different shells.
-./bin/spark-class org.apache.spark.deploy.worker.Worker spark://new-host.home:7077
+./bin/spark-class org.apache.spark.deploy.worker.Worker spark://<host url from UI>:7077
 
-./bin/spark-class org.apache.spark.deploy.worker.Worker spark://new-host.home:7077 --webui-port 8082
+./bin/spark-class org.apache.spark.deploy.worker.Worker spark://<host url from UI>:7077 --webui-port 8082
+
+./bin/spark-class org.apache.spark.deploy.worker.Worker spark://Johns-MacBook-Pro-2.local:7077 --webui-port 8082
 
 
-./bin/spark-class org.apache.spark.deploy.worker.Worker spark://new-host.home:7077 --webui-port 8083
+./bin/spark-class org.apache.spark.deploy.worker.Worker spark://<host url from UI>:7077 --webui-port 8083
 
 
 http://localhost:8080/
