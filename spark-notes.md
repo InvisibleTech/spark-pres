@@ -67,10 +67,29 @@ words . first () // returns "hello"
 * Bottom line is - Spark will make sure your job doesn't break due to too much memory use.  It may be less performant but it will complete - all things being equal.
 
 #Examples
-Example 3-3. Scala parallelize example 
-val lines = sc . parallelize ( List ( "pandas" , "i like pandas" ))
+Example 3-3. Scala parallelize example - with extra stuff 
+val lines = sc . parallelize ( List ( "pandas" , "i like pandas", "don't eat pandas" ))
 
-Scala filter example 
+// Let's add some class to this
+class MyStuff(var text: String, var len: Int) extends Serializable {
+    override def toString = s"MyStuff($text, $len)"
+}
+
+val myStuffs = lines.map(line => new MyStuff(line, line.length()))
+
+// Show it all - this is an Action
+
+myStuffs.collect()
+
+// Lets show some Map Reduce
+val words = myStuffs.flatMap(o => o.text.split(" "))
+
+val maps = words.map(word => (word, 1))
+
+val reduction = maps.reduceByKey((x, y) => x + y)
+reduction.collect()
+
+// Scala filter example 
 val macbethRDD = sc.textFile( "../data/books/MacBeth.txt" )
 val bloodyScottsRDD = macbethRDD.filter (line => line.contains( "blood" ))
 
